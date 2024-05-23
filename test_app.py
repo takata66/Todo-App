@@ -1,8 +1,10 @@
 import unittest
 import json
+import time
 from http.server import HTTPServer
 from threading import Thread
-from app import RequestHandler, run
+from app import RequestHandler
+import requests
 
 class TodoTestCase(unittest.TestCase):
     @classmethod
@@ -10,6 +12,7 @@ class TodoTestCase(unittest.TestCase):
         cls.server = HTTPServer(('localhost', 8000), RequestHandler)
         cls.thread = Thread(target=cls.server.serve_forever)
         cls.thread.start()
+        time.sleep(1)  # добавляем задержку
 
     @classmethod
     def tearDownClass(cls):
@@ -23,7 +26,6 @@ class TodoTestCase(unittest.TestCase):
         self.assertEqual(response.json()['title'], 'Test Todo')
 
     def _make_request(self, path, method, data=None):
-        import requests
         url = f'http://localhost:8000{path}'
         headers = {'Content-Type': 'application/json'}
         if method == 'POST':
